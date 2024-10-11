@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8080" # Проброс порта для доступа к приложению Flask
+    volumes:
+      - ./uploads:/app/uploads # Монтируем папку для сохранения загруженных файлов на хосте
+      - ./static/thumbnails:/app/static/thumbnails # Монтируем папку для миниатюр

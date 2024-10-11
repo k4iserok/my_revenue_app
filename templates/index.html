@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модель выручки</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Модель выручки</h1>
+        <form method="POST" action="/">
+            <h2 class="mt-4">Параметры модели</h2>
+            <!-- Таблица для ввода параметров модели -->
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Параметр</th>
+                        <th>Значение</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Стоимость АТ, руб</td>
+                        <td><input type="number" name="cost_AT" value="{{ parameters.cost_AT }}" class="form-control" required></td>
+                    </tr>
+                    <tr>
+                        <td>Доля АТ аренда, %</td>
+                        <td><input type="number" name="rental_share" value="{{ parameters.rental_share }}" class="form-control" required></td>
+                    </tr>
+                    <tr>
+                        <td>Доля АТ продажа, %</td>
+                        <td><input type="number" name="sales_share" value="{{ parameters.sales_share }}" class="form-control" required></td>
+                    </tr>
+                    <tr>
+                        <td>Ежемесячный платеж за аренду АТ, руб</td>
+                        <td><input type="number" name="monthly_rent" value="{{ parameters.monthly_rent }}" class="form-control" required></td>
+                    </tr>
+                    <tr>
+                        <td>Ежегодный платеж за аренду АТ, руб</td>
+                        <td><input type="number" name="annual_rent" value="{{ parameters.annual_rent }}" class="form-control" required></td>
+                    </tr>
+                    <tr>
+                        <td>Индексация тарифов связи (РФ, 2024)</td>
+                        <td><input type="number" name="indexation_russia_2024" value="{{ parameters.indexation_russia_2024 }}" class="form-control" required></td>
+                    </tr>
+                    <tr>
+                        <td>Индексация тарифов связи (РФ, 2025)</td>
+                        <td><input type="number" name="indexation_russia_2025" value="{{ parameters.indexation_russia_2025 }}" class="form-control" required></td>
+                    </tr>
+                    <tr>
+                        <td>Индексация тарифов связи (Зарубежные страны, 2024)</td>
+                        <td><input type="number" name="indexation_foreign_2024" value="{{ parameters.indexation_foreign_2024 }}" class="form-control" required></td>
+                    </tr>
+                    <tr>
+                        <td>Индексация тарифов связи (Зарубежные страны, 2025)</td>
+                        <td><input type="number" name="indexation_foreign_2025" value="{{ parameters.indexation_foreign_2025 }}" class="form-control" required></td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- Кнопки для сохранения параметров и запуска расчета -->
+            <div class="d-flex">
+                <button type="submit" class="btn btn-primary mr-2">Сохранить параметры</button>
+                <a href="/calculate" class="btn btn-success mr-2">Общий расчет</a>
+                <a href="/segment_calculate" class="btn btn-info">Детальный расчет (по сегментам)</a>
+            </div>
+        </form>
+
+        <h2 class="mt-4">Загрузка таблицы Excel</h2>
+        <a href="{{ url_for('upload_file') }}" class="btn btn-info">Загрузить таблицу Excel</a>
+        
+        <h3 class="mt-4">Загруженные файлы</h3>
+        <ul>
+            {% for file in files %}
+                <li>
+                    <a href="{{ url_for('view_file', filename=file) }}">{{ file }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

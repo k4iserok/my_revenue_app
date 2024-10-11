@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр файла {{ filename }}</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Просмотр файла: {{ filename }}</h1>
+        <div class="table-responsive mt-4">
+            {{ table|safe }}
+        </div>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Назад</a>
+    </div>
+</body>
+</html>

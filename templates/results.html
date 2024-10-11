@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результаты расчета выручки</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Результаты расчета выручки</h1>
+
+        <!-- График годовой выручки -->
+        <h2 class="mt-4">График годовой выручки (млн руб.)</h2>
+        <img src="data:image/png;base64,{{ graph_url }}" class="img-fluid" alt="График годовой выручки">
+
+        <!-- Таблица с детализированными данными по каждому году -->
+        <h2 class="mt-4">Детализированные данные по каждому году (млн руб.)</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Год</th>
+                    <th>Выручка от продаж (млн руб.)</th>
+                    <th>Выручка от аренды (млн руб.)</th>
+                    <th>Выручка от услуг связи (млн руб.)</th>
+                    <th>Общая выручка (млн руб.)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for year, revenue in yearly_revenue.items() %}
+                <tr>
+                    <td>{{ year }}</td>
+                    <td>{{ (revenue.sales_revenue / 1000000) | round(2) }}</td>
+                    <td>{{ (revenue.rental_revenue / 1000000) | round(2) }}</td>
+                    <td>{{ (revenue.connection_revenue / 1000000) | round(2) }}</td>
+                    <td><strong>{{ (revenue.total_revenue / 1000000) | round(2) }}</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="/" class="btn btn-secondary mt-3">Назад к параметрам</a>
+        <a href="/segment_calculate" class="btn btn-info mt-3">Посегментный расчет</a>
+    </div>
+</body>
+</html>

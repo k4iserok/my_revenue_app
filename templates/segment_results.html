@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Посегментный расчет выручки</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .thumbnail { width: 100px; height: 75px; }
+        .slider-label { font-weight: bold; }
+    </style>
+    <script>
+        function updateYearRange() {
+            const startYear = document.getElementById("startYear").value;
+            const endYear = document.getElementById("endYear").value;
+            document.getElementById("yearRangeLabel").innerText = `${startYear} - ${endYear}`;
+            document.getElementById("yearForm").submit();
+        }
+
+        function updateThumbnail(chartType) {
+            const thumbnail = document.getElementById("chartThumbnail");
+            const thumbnails = {
+                "line": "/static/thumbnails/line_chart.png",
+                "bar": "/static/thumbnails/bar_chart.png",
+                "histogram": "/static/thumbnails/histogram.png",
+                "pie": "/static/thumbnails/pie_chart.png",
+                "waterfall": "/static/thumbnails/waterfall.png"
+            };
+            thumbnail.src = thumbnails[chartType];
+        }
+    </script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Посегментный расчет выручки</h1>
+
+        <!-- Форма для выбора диапазона лет -->
+        <form id="yearForm" method="GET" action="/segment_calculate">
+            <div class="form-group">
+                <label for="yearRange" class="slider-label">Выберите диапазон лет:</label>
+                <div class="d-flex align-items-center">
+                    <span id="startYearLabel" class="slider-label">2026</span>
+                    <input type="range" id="startYear" name="start_year" min="2026" max="2040" value="{{ start_year }}" oninput="updateYearRange()">
+                    <span class="mx-2">-</span>
+                    <input type="range" id="endYear" name="end_year" min="2026" max="2040" value="{{ end_year }}" oninput="updateYearRange()">
+                    <span id="endYearLabel" class="slider-label">2040</span>
+                </div>
+            </div>
+        </form>
+
+        <!-- Таблица с данными -->
+        <h2 class="mt-4">Общий итог по выбранным годам: <span id="yearRangeLabel">{{ start_year }} - {{ end_year }}</span> (млн руб.)</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Сегмент - Подсегмент</th>
+                    <th>Суммарная выручка от продаж (млн руб.)</th>
+                    <th>Суммарная выручка от аренды (млн руб.)</th>
+                    <th>Суммарная выручка от услуг связи (млн руб.)</th>
+                    <th>Общая выручка (млн руб.)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for segment, totals in total_revenue_by_segment.items() %}
+                <tr>
+                    <td>{{ segment }}</td>
+                    <td>{{ (totals.sales_revenue / 1000000) | round(2) }}</td>
+                    <td>{{ (totals.rental_revenue / 1000000) | round(2) }}</td>
+                    <td>{{ (totals.connection_revenue / 1000000) | round(2) }}</td>
+                    <td><strong>{{ (totals.total_revenue / 1000000) | round(2) }}</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Выбор нескольких графиков -->
+        <div class="form-group">
+            <label for="chartSelect" class="mt-4">Выберите графики для отображения:</label>
+            <select id="chartSelect" name="chart_types" class="form-control" multiple>
+                <option value="line">Линейный график</option>
+                <option value="bar">Столбчатая диаграмма</option>
+                <option value="histogram">Гистограмма</option>
+                <option value="pie">Круговая диаграмма</option>
+                <option value="waterfall">Каскадный график</option>
+            </select>
+            <button type="button" class="btn btn-primary mt-2" onclick="submitChartSelection()">Показать выбранные графики</button>
+        </div>
+
+        <!-- Миниатюра выбранного графика -->
+        <div class="mt-4">
+            <h6>Предварительный просмотр:</h6>
+            <img id="chartThumbnail" src="/static/thumbnails/line_chart.png" class="thumbnail" alt="Миниатюра графика">
+        </div>
+
+        <!-- Отображение выбранных графиков -->
+        <div id="chartsContainer" class="mt-4">
+            {% for chart_url in chart_urls %}
+                <img src="data:image/png;base64,{{ chart_url }}" class="img-fluid mt-3" alt="График выручки">
+            {% endfor %}
+        </div>
+
+        <a href="/" class="btn btn-secondary mt-3">Назад к параметрам</a>
+        <a href="/calculate" class="btn btn-info mt-3">Общий расчет</a>
+
+        <script>
+            function submitChartSelection() {
+                const selectedCharts = Array.from(document.getElementById("chartSelect").selectedOptions)
+                                            .map(option => option.value);
+                const form = document.createElement('form');
+                form.method = 'GET';
+                form.action = '/segment_calculate';
+                form.style.display = 'none';
+
+                selectedCharts.forEach(chart => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'chart_types';
+                    input.value = chart;
+                    form.appendChild(input);
+                });
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+        </script>
+    </div>
+</body>
+</html>
